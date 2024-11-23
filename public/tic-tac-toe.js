@@ -34,9 +34,11 @@ function makeButtons(){
     const newGameButton = document.createElement('button')
     newGameButton.classList.add("newGame")
     newGameButton.innerText = "New Game"
+    newGameButton.addEventListener("click", newGameButtonHandler)
     const giveUpButton = document.createElement('button')
     giveUpButton.classList.add("giveUp")
     giveUpButton.innerText = "Give Up"
+    giveUpButton.addEventListener("click", giveUpHandler)
     
     buttonRow.appendChild(newGameButton)
     buttonRow.appendChild(giveUpButton)
@@ -59,8 +61,11 @@ function squareClickHandler(e){
         e.target.classList.add("marked")
         e.target.classList.remove("empty")
         e.target.innerHTML = `<object type="image/svg+xml" data=./assets/player-${currentMarker}.svg></object>`
+        setMark(getCoords(e.target))
+        if(checkWin()){
+            endGame(checkWin())
+        }
         changeTurn()
-        console.log(getCoords(e.target))
     }else{
         alert("please select an empty square")
         // console.log("asdasdf ")
@@ -68,11 +73,22 @@ function squareClickHandler(e){
 }
 
 function newGameButtonHandler(e){
-    
+    resetGame()
+    document.querySelector(".winner").innerText = ''
+}
+
+function giveUpHandler(e){
+    resetGame()
+    document.querySelector(".winner").innerText = getOpponent()
 }
 
 function isValid(element){
     return element.classList.contains("empty")
+}
+
+function getOpponent(){
+    const currentPlayer = sessionStorage.getItem("currentPlayer")
+    return currentPlayer === 'X' ? 'O' : 'X'
 }
 
 function getCoords(element){
@@ -82,11 +98,102 @@ function getCoords(element){
 }
 
 
-window.addEventListener("DOMContentLoaded", () =>{
+function makeGame() {
     const gridElement = makeGrid(3)
     document.body.appendChild(gridElement)
     sessionStorage.setItem("currentPlayer", "X")
     makeButtons()
-    // debugger
+    
+}
+
+function setMark(coord){
+    const row = coord[0]
+    const col = coord[1]
+    grid[row][col] = sessionStorage.getItem("currentPlayer")
+}
+
+function resetGame(){
+    grid = [[' ',' ',' '],
+            [' ',' ',' '],
+            [' ',' ',' ']]
+    document.querySelector(".grid").remove()
+    document.querySelector(".button-row").remove()
+    makeGame()
+}
+
+function removeSquareHandlers(){
+    const squares = document.querySelectorAll(".square")
+    squares.forEach((ele) => ele.removeEventListener('click', squareClickHandler))
+}
+
+function endGame(winner){
+    if (winner === 'O' || winner === 'X'){
+        alert(`Player ${winner} wins!`)
+        document.querySelector(".winner").innerText = winner
+    }else if ( winner === 'T' ){
+        alert('Tie Game!')
+    } else {
+        alert('Game Over')
+    }
+    removeSquareHandlers()
+}
+
+function checkWin() {
+
+    //Horizontal Check
+    if(grid.some((row) => row.every((ele)=> ele == 'X'))){
+      return 'X';
+    }
+    if(grid.some((row) => row.every((ele)=> ele == 'O'))){
+      return 'O';
+    }
+    //Vertical Check
+    let verticalWins = []
+    for(let i = 0; i < grid[0].length; i ++ ){
+      verticalWins.push(grid.map((row) => row[i]))
+    }
+    if(verticalWins.some((row) => row.every((ele) => ele == 'X'))){
+      return 'X';
+    }
+    if(verticalWins.some((row) => row.every((ele) => ele == 'O'))){
+      return 'O';
+    }
+      //Diagonal Check
+    let leftToRightDiagonal = [];
+    let rightToLeftDiagonal = [];
+    let reversedGrid = [...grid].reverse()
+    for(let i = 0; i < grid[0].length; i++){
+      leftToRightDiagonal.push(grid[i][i]);
+    }
+    for(let i = grid[0].length - 1; i >= 0 ; i--){
+      rightToLeftDiagonal.push(reversedGrid[i][i]);
+    }
+
+    if(leftToRightDiagonal.every((ele) => ele == 'X')){
+      return 'X';
+    }
+    if(leftToRightDiagonal.every((ele) => ele == 'O' )){
+      return 'O';
+    }
+    if(rightToLeftDiagonal.every((ele) => ele == 'X')){
+      return 'X';
+    }
+    if(rightToLeftDiagonal.every((ele) => ele == 'O' )){
+      return 'O';
+    }
+    else if (grid.every((row) => row.every((ele) => ele == 'X' || ele == 'O'))){
+      return 'T';
+    }
+    
+    
+    else{ 
+      return false;
+    }
+
+  }
+
+
+window.addEventListener("DOMContentLoaded", () =>{
+    makeGame()
 })
 
