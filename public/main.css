@@ -1,1 +1,71 @@
-/* Your code here */
+body {
+    display: inline-flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.grid {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+}
+
+.row {
+    width: 100%
+}
+
+#row-0 > div{
+    border-top: none;
+}
+
+#row-2 > div{
+    border-bottom: none;
+}
+
+/* ++++++++++++++++++++ Square stylings ++++++++++++++++ */
+.square {
+    border: 1px solid black;
+    height: 50px;
+    width: 50px;
+    display: inline-block;
+    padding: 15px;
+    vertical-align: top;
+    text-align: center;
+}
+
+/* right edge */
+#square-2,
+#square-5,
+#square-8 {
+    border-right: none;
+}
+
+/* Left edge */
+#square-0,
+#square-3,
+#square-6 {
+    border-left:none;
+}
+
+.marked {
+    background-image: url("./assets/player-x.svg");
+}
+
+object {
+    height: 50px;
+    width: 50px;
+}
+
+.button-row {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    padding: 5%;
+}
+
+
+.hidden {
+    visibility: hidden;
+}
